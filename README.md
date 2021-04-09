@@ -1,47 +1,23 @@
-# Getting Started with Create React App
+# Editeur de texte
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Ce projet est un editeur de texte faire en python. Ceci est un projet scolaire donnée a l'issu du cours du Geniel Logiciel
 
-## Available Scripts
 
-In the project directory, you can run:
+## Modules utilisés
 
-### `yarn start`
+Afin de parvenir a nos fins, ce micro editeur de texte utilise comme modulues les suivants:
+-[React js]() pour l'interface graphique
+- [Eel](#) afin de pouvoir utiliser toute la puissance des technologies du web et les embarques dans un program en combinant [python]() et Technologies du web
+-[pyinstaller] afin de creer un executable quand le developement du projet sera terminer
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+NB: Tout les autres modules utilisés seront spécifier au cours du developement
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Comment executer le logiciel ?
 
-### `yarn test`
+Pour demarrer executer le logiciel simplement executer le fichier [bootstrapper.py]
+en utilisant la commande : python bootstrapper.py
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Bugs et suggestions
 
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-# texted_app
+Pour tout bugs ou eventuel suggestion veuillez ouvrir une [issue] et pour d'eventuelle suggestion veuillez 
+nous ecrire ou nous contacter [@siprogramming](#)
