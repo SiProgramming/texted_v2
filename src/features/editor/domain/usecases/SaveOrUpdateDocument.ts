@@ -8,16 +8,19 @@ import DocumentRepository from "../repositories/DocumentRepository";
  */
 export class SaveOrUpdateDocument implements UseCase<Promise<boolean|DocumentFailureOuput>,SaveOrUpdateDocumentParams>{
     private documentRepository:DocumentRepository;
-
     constructor(documentRepository:DocumentRepository){
         this.documentRepository=documentRepository;
     }
+
     
     async trigger(params: SaveOrUpdateDocumentParams):Promise<boolean|DocumentFailureOuput>{
         return await this.documentRepository.saveOrUpdateDocument(params.document);
     }
+
+    //notify listeners
 }
 
 export interface SaveOrUpdateDocumentParams {
     document:Document
 }
+

@@ -1,4 +1,4 @@
-import { eel } from "../../../../../core/utils/eel/eel";
+import { eel } from "../../../../../../python_src/eel";
 import EditorStateTransformer from "../../../../../core/utils/transformers/EditorStateTransformer";
 import Document from "../../../domain/entities/document/Document";
 import DocumentFailure, { DocumentFailureOuput, DocumentFailureType } from "../../../domain/entities/document/DocumentFailure";
@@ -15,8 +15,8 @@ export default class LocalDataSourceImpl implements LocalDataSource{
     async saveOrUpdateDocument(document: Document): Promise<boolean|DocumentFailureOuput> {
         try {
                 //Convert the doc to json 
-        const _jsonDoc=EditorStateTransformer.convertToJson(document.editorContent);
-        const _isSaved=eel.save_or_update_document(_jsonDoc);
+        // const _jsonDoc=EditorStateTransformer.convertToJson(document);
+        const _isSaved=eel.save_or_update_document(document.toJson());
             return _isSaved;
         }
         catch(e){
@@ -28,6 +28,7 @@ export default class LocalDataSourceImpl implements LocalDataSource{
         try {
             const _jsonDoc=JSON.parse(eel.get_document(documentId));
             return new DocumentModel({
+                documentId:_jsonDoc.document_id,
                  content:_jsonDoc.content,
                 documentName:_jsonDoc.documentName,
                 createdOn:_jsonDoc.createdOn});
@@ -38,10 +39,11 @@ export default class LocalDataSourceImpl implements LocalDataSource{
 
     async getDocuments(limit: number):Promise<Array<DocumentModel>|DocumentFailureOuput> {
         try {
-            const _jsonDocs=JSON.parse(eel.get_documents(limit)) as Array<DocumentModelParams>; //For getting a list of documents
+            const _jsonDocs=JSON.parse(eel.get_documents(limit)) as Array<any>; //For getting a list of documents
             //Convert them into list of Document
             const _docsList:Array<DocumentModel>= _jsonDocs.map(_jsonDoc => {
                 return new DocumentModel({
+                documentId:_jsonDoc.document_id,
                     content:_jsonDoc.content,
                     documentName:_jsonDoc.documentName,
                     createdOn:_jsonDoc.createdOn

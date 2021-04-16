@@ -1,14 +1,24 @@
+import { convertToRaw } from "draft-js";
 import {ContentState, EditorState} from "react-draft-wysiwyg";
 
 export default class Document {
     private _editorState: EditorState;
     private _documentName:string;
+    public docId?:number;
     private _createdOn:Date;
+    private listeners:Array<DocumentListener>;
 
-    constructor(contentState:ContentState,documentName:string,createdOn:string){
+    constructor(documentId:number,contentState:ContentState,documentName:string,createdOn:string){
+        this.docId=documentId;
         this._editorState=EditorState.createWithContent(contentState);
         this._documentName=documentName!!;
         this._createdOn=new Date(createdOn!!);
+        this.listeners=[];
+    }
+
+        //For adding listener in listeners
+    addListener(listener:DocumentListener){
+        this.listeners.push(listener);
     }
 
     //Getters
@@ -29,9 +39,16 @@ export default class Document {
         return this._editorState.getCurrentContent()!!;
     }
 
-    //Convert [RawDraftContentState] to json
-    convertToJson():{}{
-        //TODO
-        return {};
+    public toJson(){
+            return JSON.parse(JSON.stringify({
+                document_id:this.docId!!,
+                content:convertToRaw(this.editorContent),
+                date:Date.now().toLocaleString()
+            }));
     }
+
+}
+
+export interface DocumentListener {
+    onSaving():void
 }

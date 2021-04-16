@@ -9,12 +9,13 @@ export default class DocumentModel extends Document {
     constructor(doc:DocumentModelParams){
         //Convert back the JSON object to ContentState
         const docContentState:ContentState=EditorStateTransformer.convertToContentState(doc.content);
-        super(docContentState,doc.documentName,doc.createdOn);
+        super(doc.documentId,docContentState,doc.documentName,doc.createdOn);
     }
 }
 
 export interface DocumentModelParams {
-    content: string;
-    documentName:string;
-    createdOn:string;
+    content: string,
+    documentId:number,
+    documentName:string,
+    createdOn:string,
 }
