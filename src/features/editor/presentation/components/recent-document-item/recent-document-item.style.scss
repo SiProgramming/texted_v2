@@ -1,0 +1,12 @@
+.recent-item {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    color: white;
+    background-color: rgb(2, 2, 172);
+    transition: background-color 200ms linear;
+    cursor: pointer;
+}
+
+.recent-item:hover, .recent-item:active {
+    background-color: rgb(0, 0, 65);
+}

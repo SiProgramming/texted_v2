@@ -1,0 +1,14 @@
+.editor-actions {
+    height: 60px;
+    padding-right: 25px;
+    padding: 9px;
+    display: flex;
+    justify-content: flex-end;
+
+    
+    .actions-button {
+        background-color:"blue";
+        color:"white";
+        border-radius: 20px;
+    }
+}

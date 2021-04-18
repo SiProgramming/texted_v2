@@ -8,7 +8,6 @@ tk=tkinter.Tk()
 if __name__=="__main__":
     if(sys.argv[1]=="--develop"):
         # Init the project 
-        print('Herr')
         eel.init("public")
         eel.start({
             'port':3000,
