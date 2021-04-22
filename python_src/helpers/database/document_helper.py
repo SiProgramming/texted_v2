@@ -51,4 +51,4 @@ class DBHelper:
             delted_docs_id=self.documents_collection.remove(self.doc_query.document_id==document_id)
             return len(delted_docs_id)!=0
         except:
-            print('An Erro occured')
+            print('An Error occured')

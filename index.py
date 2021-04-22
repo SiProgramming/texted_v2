@@ -9,6 +9,8 @@ if __name__=="__main__":
     if(sys.argv[1]=="--develop"):
         # Init the project 
         eel.init("public")
+        
+        # Need to define also the start launcher
         eel.start({
             'port':3000,
             'host':'localhost'

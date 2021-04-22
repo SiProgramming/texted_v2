@@ -1,4 +1,3 @@
-import { ListItem, ListItemText } from '@material-ui/core';
 import React from 'react';
 import DocumentViewItem from '../../components/document-view-item/document-view-item.component';
 import RecentDocumentList from '../../components/recent-document-list/recent-document-list.component';
