@@ -1,4 +1,4 @@
-import { eel } from "../../../../../../python_src/eel";
+import { eel } from "../../../../../eel";
 import EditorStateTransformer from "../../../../../core/utils/transformers/EditorStateTransformer";
 import Document from "../../../domain/entities/document/Document";
 import DocumentFailure, { DocumentFailureOuput, DocumentFailureType } from "../../../domain/entities/document/DocumentFailure";
