@@ -8,12 +8,6 @@ const App = ()=>{
   
   eel.set_host("ws://localhost:8888");
   
-  const test=async()=>{
-    const test=await eel.test_me()();
-    console.log(test);
-  }
-
-  test();
 
   return (
     <BrowserRouter>

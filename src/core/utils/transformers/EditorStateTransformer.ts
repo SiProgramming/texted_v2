@@ -15,3 +15,16 @@ export default class EditorStateTransformer {
         return convertFromRaw(JSON.parse(data));
     }
 }
+
+export class EditorStateTransformer2 {
+    //For transforming  EditorState object to json(string)
+    public static convertToString(document:ContentState):string{
+        return JSON.stringify({
+            content:convertToRaw(document)});
+    }
+
+    // From json to ContentState
+    public static convertToContentState(data:string):ContentState{
+        return convertFromRaw(JSON.parse(data));
+    }
+}
