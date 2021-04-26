@@ -16,7 +16,7 @@ NB: Tout les autres modules utilisés seront spécifier au cours du developement
 ### Comment executer le logiciel ?
 
 Pour demarrer executer le logiciel simplement executer le fichier [bootstrapper.py]
-en utilisant la commande : python bootstrapper.py
+en utilisant la commande : yarn start
 
 #### Bugs et suggestions
 
