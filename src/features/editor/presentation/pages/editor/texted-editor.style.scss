@@ -2,15 +2,39 @@
 .texted-editor {
     // padding: 35px;
     height: 100vh;
-    background-color: rgb(249, 249, 249);
+    background-color: #e6e6e6;
     position: relative;
     display: flex;
 
 
+    .file-info::after{
+        content: '';
+        display: block;
+        height: 2px;
+        animation: anim-start 5s cubic-bezier(0.39, 0.575, 0.565, 1);
+    }
+    
+    @keyframes anim-start {
+        0%{
+            width: 0;
+            height: 2px;
+            background-color: rgb(4, 226, 4);
+        }
+        99% {
+            width: 100%;
+            height: 2px;
+            background-color: rgb(4, 226, 4);
+        }
+        100%{
+            width: 0;
+            height: 0;
+        }
+    }
+
     .actions-bar {
         order: 1;
         padding:25px 0;
-        background-color: blue;     
+        background-color: #312783;     
         border-right: 7px solid rgb(243, 243, 243);
         display: flex;
         flex-basis: 4.5%;

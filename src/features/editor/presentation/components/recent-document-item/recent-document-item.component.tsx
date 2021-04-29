@@ -1,10 +1,15 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './recent-document-item.style.scss';
 
-const RecentDocumentItem=(props)=>{
+export interface RecentDocumentProps {
+    path: string,
+    filename: string
+}
+
+const RecentDocumentItem = (props: RecentDocumentProps) => {
     return (
-        <Link style={{textDecoration:"none"}} to="/"><p className="recent-item">Software Developement Plan</p></Link>
+        <Link style={{ textDecoration: "none" }} to={`/editor:${props.path}`}><p className="recent-item">{props.filename.split('.texted')[0]}</p></Link>
     )
 };
 

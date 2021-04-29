@@ -14,7 +14,7 @@ def get_config_value():
     file_json=open(CONFIG_FILE_NAME,'r')    
     return json.load(file_json)
 
-def get_db_path(dict):
+def get_db_path(dict:dict):
     if(platform.system()=='Windows'):
         # Here we get back the path of the db
-        return os.path.join(os.getenv('APPDATA'),dict['db_file_name'])
+        return os.path.join(os.getenv('APPDATA'),dict['folder_name'],dict['db_file_name'])

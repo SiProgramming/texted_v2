@@ -1,17 +1,32 @@
 import React from 'react';
-import RecentDocumentItem from '../recent-document-item/recent-document-item.component';
+import { eel } from '../../../../../eel';
+import RecentDocumentItem, { RecentDocumentProps } from '../recent-document-item/recent-document-item.component';
 import './recent-document-list.style.scss';
 
-const RecentDocumentList=(props)=>{
-    return (
-        <div className="recent-document-list">
-            <ul>
-                {
-                    [1,2,3,4,5,6].map((item)=><li><RecentDocumentItem /></li>)
-                }
-            </ul>
-        </div>
-    )
-}
+export default class RecentDocumentList extends React.Component<any, { recentDocs: Array<RecentDocumentProps> }> {
 
-export default RecentDocumentList;
+    constructor(props: any) {
+        super(props);
+        this.state = {
+            recentDocs: []
+        };
+    }
+
+    async componentDidMount() {
+        const recentDocs = await eel.get_recents_documents()()
+        this.setState({ recentDocs: recentDocs });
+    }
+
+    render() {
+        return (
+            <div className="recent-document-list">
+                {this.state.recentDocs.length !== 0 ? <ul>
+                    {
+                        this.state.recentDocs.map((doc, index) => <li key={index}><RecentDocumentItem filename={doc.filename} path={doc.path} /></li>)
+                    }
+                </ul> : <p style={{ color: "white" }}>Aucun document recents</p>
+                }
+            </div>
+        )
+    }
+}

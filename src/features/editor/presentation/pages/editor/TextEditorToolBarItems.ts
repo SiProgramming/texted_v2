@@ -168,7 +168,7 @@ const ToolBarItems={
       "rgb(124,112,107)",
       "rgb(209,213,216)"
     ],
-    title: "Picker de couleur"
+    title: "Couleur"
   },
   link: {
     inDropdown: false,
