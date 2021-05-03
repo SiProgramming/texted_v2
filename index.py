@@ -3,6 +3,14 @@ import eel
 import tkinter
 import tkinter.filedialog as TkFile
 import json
+import ctypes
+import mammoth
+
+
+def hideConsole():
+  whnd = ctypes.windll.kernel32.GetConsoleWindow()
+  if whnd != 0:
+     ctypes.windll.user32.ShowWindow(whnd, 0)
 
 
 from python_src.constants.config_names import *
@@ -13,8 +21,14 @@ tk.geometry('0x0+0+0')
 tk.withdraw()
 tk.lift()
 
+config_data={
+    "name":"TextEd",
+    "folder_name":"TextEd",
+    "db_file_name":"texted_db.json"
+    }
+    
 # Imports path config 
-database_folder_path=get_db_path(get_config_value())
+database_folder_path=get_db_path(config_data)
 print(database_folder_path)
 # Init tiny db object
 tinydb_helper=DBHelper(database_folder_path)
@@ -31,7 +45,7 @@ def save_file(data: str, path: str,doc_filename:str, force: bool):
             extenion = [("TextEd File", "*.texted")]
             file_to_write_in = TkFile.asksaveasfile(
                 filetypes=extenion, defaultextension='.texted',initialfile=doc_filename)
-
+            print(data)
             #Saving data
             file_to_write_in.write(data)
             file_to_write_in.close()
@@ -78,23 +92,46 @@ def get_recents_documents():
     return tinydb_helper.get_documents(5)
 
 @eel.expose
+def open_file_from_path(path:str):
+    file_open=open(path,"r")
+    if(file_open.readable()):
+        return json.dumps({
+            "filename": path.split('/')[-1],
+            "path": path,
+            "content": file_open.read()
+        })
+    return None
+
+
+@eel.expose
 def open_file():
     ''' This method is to open file '''
     try:
         tk.lift()
-        extenion = [("TextEd File", "*.texted")]
+        extenion = [("TextEd File", "*.texted"),("Word document",".docx")]
         #Open file
         file_open = TkFile.askopenfile(
             filetypes=extenion, defaultextension='.texted', mode="r")
-        filename_name = file_open.name.split('/')[-1]
         if(file_open != None):
+            filename_name =file_open.name.split('/')[-1]
+            print(filename_name.split('.')[-1])
+            if(filename_name.split('.')[-1]=="docx"):
+                print('Is a document word')
+                docx_file=open(file_open.name, "rb")
+                result = mammoth.convert_to_html(docx_file)
+                return json.dumps({
+                    "filename": filename_name,
+                    "path": None,
+                    "content": result.value
+                })
             # json_file_content=json.loads(file_open.read())
             # print(json_file_content)
-            return json.dumps({
-                "filename": filename_name,
-                "path": file_open.name,
-                "content": file_open.read()
-            })
+            else :
+                return json.dumps({
+                    "filename": filename_name,
+                    "path": file_open.name,
+                    "content": file_open.read()
+                })
     except:
         return None
 
@@ -105,39 +142,35 @@ def open_new_intance():
 
 
 def init():
-    if(sys.argv[1] == "--develop"):
-        # Init the project
-        eel.init("public")
+    if(len(sys.argv)>1):
+        if(sys.argv[1] == "--develop"):
+            # Init the project
+            eel.init("public")
 
-        # Need to define also the start launcher
-        eel.start({
-            'port': 3000,
-            'host': 'localhost'
-        }, options={
-            'port': 8888,
-            'host': 'localhost'
-        }, suppress_error=True, size=(int(tk.winfo_screenwidth()), int(tk.winfo_screenheight())))
+            # Need to define also the start launcher
+            eel.start({
+                'port': 3000,
+                'host': 'localhost'
+            }, options={
+                'port': 8888,
+                'host': 'localhost'
+            }, suppress_error=True, size=(int(tk.winfo_screenwidth()), int(tk.winfo_screenheight())))
     else:
         try:
             eel_kwargs = dict(
             host='localhost',
-            port=8888
+            port=8888,
+            chromeFlags=["--start-fullscreen", "--browser-startup-dialog"]
             )
             eel.init('build',[".js",".html",".tsx",".ts",".jsx"])
-            eel.start('index.html', size=(int(tk.winfo_screenwidth()), int(
+            eel.start('index.html',size=(int(tk.winfo_screenwidth()), int(
             tk.winfo_screenheight())), suppress_error=True, **eel_kwargs)
 
-        except:
-            # TODO 
-            if(platform.system()=="Windows"):
-                eel_kwargs = dict(
-                host='localhost',
-                port=8888,
-                app="edge"
-                )
-                eel.init('build',[".js",".html",".tsx",".ts",".jsx",".css",".png"])
-                eel.start('index.html', size=(int(tk.winfo_screenwidth()), int(
-                tk.winfo_screenheight())), suppress_error=True, **eel_kwargs)
+        except EnvironmentError:
+            # If Chrome isn't found, fallback to Microsoft Edge on Win10 or greater
+            if sys.platform in ['win32', 'win64'] and int(platform.release()) >= 10:
+                eel.start("index.html", mode='edge',size=(int(tk.winfo_screenwidth()), int(
+                tk.winfo_screenheight())), suppress_error=True,**eel_kwargs)
             else:
                 raise
         
@@ -149,4 +182,5 @@ def exit_eel():
 
 
 if __name__ == "__main__":
+    # hideConsole()
     init()

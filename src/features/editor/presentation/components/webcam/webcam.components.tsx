@@ -4,14 +4,14 @@ import { CameraAlt, Close } from '@material-ui/icons';
 import React from 'react';
 import Webcam from 'react-webcam';
 
-const TextEdWebcam=(props:{
+const TextEdWebcam= (props:{
     webcamRef:any,
     onCapture:any,
     onCLose:any
 })=>{
 
     const videoConstraints = {
-        width: 1280,
+        width: 920,
         height: 720,
         facingMode: "user"
       };

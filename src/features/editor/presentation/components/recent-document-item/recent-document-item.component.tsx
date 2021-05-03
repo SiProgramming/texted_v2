@@ -9,7 +9,12 @@ export interface RecentDocumentProps {
 
 const RecentDocumentItem = (props: RecentDocumentProps) => {
     return (
-        <Link style={{ textDecoration: "none" }} to={`/editor:${props.path}`}><p className="recent-item">{props.filename.split('.texted')[0]}</p></Link>
+        <Link style={{ textDecoration: "none" }} to={
+            {
+                pathname:"/editor",
+                state:{path:props.path}
+            }
+        }><p className="recent-item">{props.filename.split('.texted')[0]}</p></Link>
     )
 };
 

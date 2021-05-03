@@ -1,36 +1,71 @@
 import Button from '@material-ui/core/Button';
-import { FolderOpen, PictureAsPdf, PostAdd, Print, Save, SaveAlt } from '@material-ui/icons';
+import { CameraAlt, FolderOpen, PhotoLibraryOutlined, PictureAsPdf, PostAdd, Print, Save, SaveAlt } from '@material-ui/icons';
 import React from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { eel } from '../../../../../eel';
 import './texted-editor.style.scss';
 import ToolBarItems from './TextEditorToolBarItems';
-import { convertToRaw, EditorState } from 'draft-js';
+import { ContentState, convertFromHTML, convertToRaw, EditorState } from 'draft-js';
 import { EditorStateTransformer2 } from '../../../../../core/utils/transformers/EditorStateTransformer';
 import jsPDF from 'jspdf';
 import draftToHtml from 'draftjs-to-html';
 import { withRouter } from 'react-router-dom';
+// import * as Mammonth from 'mammoth';
+
+import createImagePlugin from "@draft-js-plugins/image";
+import TextEdWebcam from '../../components/webcam/webcam.components';
+import { Modal } from '@material-ui/core';
+const imagePlugin = createImagePlugin();
+
+const AlertMessage = (props: { isError: boolean }) => {
+    return (
+        <span style={{ float: "right", marginRight: 50, color: props.isError ? "red" : "rgb(4, 226, 4)" }}>{props.isError ? "Document non trouvé" : "Document Enregistrer"}</span>
+    );
+}
+
+const CameraIcon = (props: {
+    editorRef: any,
+    onCaptureImage: () => void,
+    onShowWebCam: () => void
+}) => {
 
 
-// const CameraIcon = (props) => {
-//     return (
-//         <div onClick={props.onClick} className="custom-toolbar-button" title="Webcam">
-//             <CameraAlt fontSize="small" />
-//         </div>
-//     )
-// };
+    return (
+        <div onClick={props.onShowWebCam} className="custom-toolbar-button" title="Webcam">
+            <CameraAlt fontSize="small" />
+        </div>
+    )
+};
+
+const AddLocalImage = (props: {
+    imageRef: React.RefObject<HTMLInputElement>,
+    onImageChange: () => void,
+}) => {
+    return (
+        <div className="custom-toolbar-button" title="Ajouter une image">
+            {/* <form action=""  > */}
+            <label htmlFor="add-image"><PhotoLibraryOutlined fontSize="small" /></label>
+            <input ref={props.imageRef} onChange={props.onImageChange} type="file" style={{ display: "none" }} accept="image/*" id="add-image" />
+            {/* </form> */}
+        </div>
+    )
+}
 
 const textEditor = class TextEdEditor extends React.Component<any, {
     editorState: EditorState,
     documentName?: string,
     path?: null,
-    isCameraClose: boolean,
+    openWebcam: boolean,
     openSidebar: boolean,
     hideToolBar: boolean,
-    isSaved: boolean
+    isSaved: boolean,
+    isError: boolean,
 }>{
     actionBarRef: React.RefObject<HTMLDivElement>;
+    editorRef: React.RefObject<any>;
+    webcamRef: React.RefObject<any>;
+    imageRef: React.RefObject<HTMLInputElement>;
     fileInfoRef: React.RefObject<HTMLDivElement>;
 
     constructor(props: any) {
@@ -39,15 +74,59 @@ const textEditor = class TextEdEditor extends React.Component<any, {
             editorState: EditorState.createEmpty(),
             documentName: "Document Sans nom",
             path: undefined,
-            isCameraClose: false,
+            openWebcam: false,
             openSidebar: false,
             hideToolBar: false,
-            isSaved: false
+            isSaved: false,
+            isError: false,
         };
-        console.log('Props', this.props.history)
+        this.webcamRef = React.createRef();
         this.fileInfoRef = React.createRef();
         this.actionBarRef = React.createRef();
+        this.editorRef = React.createRef();
+        this.imageRef = React.createRef();
     }
+
+
+    // CLose webcam
+    onHandleCLoseWebcam = () => {
+        this.setState({ openWebcam: false });
+    }
+
+
+    onHandleOpenWebcam = () => {
+        this.setState({ openWebcam: true });
+        console.log(this.state.openWebcam)
+    }
+
+
+    onImageLoad = () => {
+        if (this.imageRef.current?.files) {
+            const fileReader = new FileReader();
+            const fileInfo: { base64: string } = {
+                base64: ''
+            };
+            fileReader.onload = (file) => {
+                if (typeof file.target?.result == "string") {
+                    fileInfo.base64 = file.target.result;
+                    const newEditorState = this.insertImage(this.state.editorState, fileInfo.base64);
+                    console.log(newEditorState.getCurrentContent())
+                    this.onEditorContentChange(newEditorState);
+                }
+            }
+            fileReader.readAsDataURL(this.imageRef.current?.files[0]);
+        }
+    };
+
+    insertImage = (editorState: EditorState, base64: string, options?: { width: number, height: number }) => {
+        const contentState = this.state.editorState.getCurrentContent();
+        const contentStateWithEntity = contentState.createEntity(
+            'image',
+            'IMMUTABLE',
+            { src: base64 }
+        );
+        return imagePlugin.addImage(editorState, base64, options ?? { width: 250, height: 150 });
+    };
 
     onEditorContentChange = (editorState: EditorState) => this.setState({ ...this.state, editorState });
 
@@ -56,7 +135,6 @@ const textEditor = class TextEdEditor extends React.Component<any, {
         document.addEventListener('keydown', (e) => {
             if (window.navigator.platform.match("Win") && e.ctrlKey && e.code === "KeyS") {
                 e.preventDefault();
-                console.log('Handle')
                 this.saveDocument();
                 // Process the event here (such as click on submit button)
             }
@@ -65,7 +143,6 @@ const textEditor = class TextEdEditor extends React.Component<any, {
         document.addEventListener('keydown', async (e) => {
             if (window.navigator.platform.match("Win") && e.ctrlKey && e.code === "KeyP") {
                 e.preventDefault();
-                console.log('Want to print')
                 this.setState({ hideToolBar: true });
                 setTimeout(() => {
                     window.print();
@@ -73,9 +150,12 @@ const textEditor = class TextEdEditor extends React.Component<any, {
             }
         });
         window.addEventListener('afterprint', () => {
-            console.log('After printer')
             this.setState({ hideToolBar: false })
         });
+
+        if (this.props.location.state) {
+            this.openDocumentFromPath(this.props.location.state.path);
+        }
     }
 
     onHandlePrinting = () => {
@@ -98,6 +178,15 @@ const textEditor = class TextEdEditor extends React.Component<any, {
         // console.log(actionBarRef.current?.classList)
     }
 
+    convertDoc = (file_infos: string) => {
+        const file_info_json = JSON.parse(file_infos);
+        this.setState({
+            documentName: file_info_json.filename,
+            path: file_info_json.path,
+            editorState: EditorState.createWithContent(EditorStateTransformer2.convertToContentState(file_info_json.content))
+        });
+    }
+
 
 
     // Open new
@@ -108,10 +197,8 @@ const textEditor = class TextEdEditor extends React.Component<any, {
     saveDocument = async (force?: boolean) => {
         // console.log(this._editorState);
         const document_stringlify = EditorStateTransformer2.convertToString(this.state.editorState.getCurrentContent())
-        console.log(document_stringlify)
         const result = await eel.save_file(document_stringlify, this.state.path != null ? this.state.path : "empty", this.state.documentName, force)();
-        console.log(result['filename']);
-        console.log(result);
+        console.log(result)
         this.setState({
             documentName: result['filename'],
             path: result['path']
@@ -129,13 +216,23 @@ const textEditor = class TextEdEditor extends React.Component<any, {
     }
 
 
+    onCaptureImage = () => {
+        console.log("Heelo");
+        const imageSrc = this.webcamRef.current?.getScreenshot()
+        const newEditorState = this.insertImage(this.state.editorState, imageSrc, {
+            width: 300,
+            height: 200
+        });
+        this.setState((state) => ({ ...state, openWebcam: false }));
+        this.onEditorContentChange(newEditorState)
+    }
+
     exportAsPdf = () => {
         const docHtml = convertToRaw(this.state.editorState.getCurrentContent());
         const doc = new jsPDF();
 
         const markup = draftToHtml(docHtml);
         const splitText = doc.splitTextToSize(markup, 250);
-        console.log(splitText)
         doc.setFontSize(12);
         const pageHeight = doc.internal.pageSize.height;
         var y = 20;
@@ -144,19 +241,49 @@ const textEditor = class TextEdEditor extends React.Component<any, {
                 y = 20;
                 doc.addPage();
             }
-            // doc.fromHTML(splitText[i], 15, y, undefined, undefined, 15);
             y = y + 5;
-            // }
-            // console.log(markup);
-            doc.fromHTML(markup, 20, 5, undefined, undefined,)
+            console.log("makr",markup)
+            doc.fromHTML(markup,{
+                x:20,
+                y:20
+            });
         }
-        doc.save('save-me.pdf');
+        doc.save(`${this.state.documentName}.pdf`);
     }
 
     openDocument = async () => {
         const file_infos = await eel.open_file()()
         if (file_infos != null) {
-            // console.log(file_infos);
+            const file_info_json = JSON.parse(file_infos);
+            const split_doc:Array<string>=file_info_json.filename.split(".")
+            if(split_doc[split_doc.length-1]=="docx"){
+                const blocksFromHTML = convertFromHTML(file_info_json.content);
+                const state = ContentState.createFromBlockArray(
+                blocksFromHTML.contentBlocks,
+                blocksFromHTML.entityMap,
+                );
+                this.setState({
+                    documentName: file_info_json.filename,
+                    path: file_info_json.path,
+                    editorState: EditorState.createWithContent(state)
+                })
+            }
+            else {
+                this.setState({
+                    documentName: file_info_json.filename,
+                    path: file_info_json.path,
+                    editorState: EditorState.createWithContent(EditorStateTransformer2.convertToContentState(file_info_json.content))
+                })
+            }
+        }
+        else {
+            this.setState({ isError: false, isSaved: false })
+        }
+    }
+
+    openDocumentFromPath = async (path: string) => {
+        const file_infos = await eel.open_file_from_path(path)()
+        if (file_infos != null) {
             const file_info_json = JSON.parse(file_infos);
             this.setState({
                 documentName: file_info_json.filename,
@@ -164,18 +291,21 @@ const textEditor = class TextEdEditor extends React.Component<any, {
                 editorState: EditorState.createWithContent(EditorStateTransformer2.convertToContentState(file_info_json.content))
             })
         }
+        else {
+            this.setState({ isError: true, isSaved: true })
+        }
     }
 
     render() {
         return (
             <div className="texted-editor">
-                {/* <CameraIcon onClick={openCamera} /> */}
-                {/* {isCameraCLose ? <Modal open={isCameraCLose} onClose={props.capture}><TextEdWebcam onCLose={openCamera} webcamRef={webcamRef} onCapture={capture} /></Modal> : null} */}
+                {/* <TextEdWebcam webcamRef={this.webcamRef} onCLose={this.onHandleCLoseWebcam} onCapture={this.onHandleOpenWebcam} /> */}
+                <Modal open={this.state.openWebcam} onClose={this.onHandleCLoseWebcam}><TextEdWebcam webcamRef={this.webcamRef} onCLose={this.onHandleCLoseWebcam} onCapture={this.onCaptureImage} /></Modal>
                 <div className="" style={{ flexBasis: "95.5%", display: "flex", flexDirection: "column", order: 2 }}>
                     <div className="file-anim" ref={this.fileInfoRef} style={{ backgroundColor: "white", justifyContent: "space-between", alignItems: "center", flexDirection: "column", height: "40px", display: "flex" }}>
-                        <p style={{ width: "100%", paddingLeft: this.state.isSaved ? 230 : 0, paddingTop: 5, textAlign: "center" }}>{this.state.documentName} - {this.state.path ? this.state.path : "Non defini"} {this.state.isSaved ? <span style={{ float: "right", marginRight: 50, color: "rgb(4, 226, 4)" }}>Document enregistrée avec sucess</span> : null}</p>
+                        <p style={{ width: "100%", paddingLeft: this.state.isSaved ? 230 : 0, paddingTop: 5, textAlign: "center" }}>{this.state.documentName} - {this.state.path ? this.state.path : "Non defini"} {this.state.isSaved ? <AlertMessage isError={this.state.isError} /> : null}</p>
                     </div>
-                    <Editor toolbarHidden={this.state.hideToolBar} toolbarClassName="toolbar" editorState={this.state.editorState} onEditorStateChange={this.onEditorContentChange} editorClassName="test" toolbar={ToolBarItems} toolbarCustomButtons={[]} wrapperStyle={{ height: "100%", overflow: "hidden", flexBasis: "100%", order: 2 }} editorStyle={{ padding: 25, backgroundColor: "white", marginTop: !this.state.hideToolBar ? 35 : 0, marginLeft: !this.state.hideToolBar ? 70 : 0, marginRight: !this.state.hideToolBar ? 70 : 0, boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)", overflow: "hidden" }} />
+                    <Editor ref={this.editorRef} toolbarHidden={this.state.hideToolBar} toolbarClassName="toolbar" editorState={this.state.editorState} onEditorStateChange={this.onEditorContentChange} editorClassName="test" toolbar={ToolBarItems} toolbarCustomButtons={[<AddLocalImage imageRef={this.imageRef} onImageChange={this.onImageLoad} />, <CameraIcon editorRef={this.editorRef} onCaptureImage={this.onCaptureImage} onShowWebCam={this.onHandleOpenWebcam} />]} wrapperStyle={{ height: "100%", overflow: "hidden", flexBasis: "100%", order: 2 }} editorStyle={{ padding: 25, backgroundColor: "white", marginTop: !this.state.hideToolBar ? 35 : 0, marginLeft: !this.state.hideToolBar ? 70 : 0, marginRight: !this.state.hideToolBar ? 70 : 0, boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)", overflow: "auto", height: "87%" }} />
                 </div>
                 {/* */}
                 {!this.state.hideToolBar ? <div ref={this.actionBarRef} onMouseEnter={this.onHandleSideBarOpening} onMouseLeave={this.onHandleSideBarCLosing} className="actions-bar" style={{ flexBasis: !this.state.openSidebar ? "4.5%" : "10%", transition: "flex-basis 400ms cubic-bezier(0.075, 0.82, 0.165, 1) reversed" }}>

@@ -1,5 +1,5 @@
 import React from "react"
-import SVG from 'svg.js';
+// import SVG from 'svg.js';
 
 export default class Logo extends React.Component<any,any> {
     plumeRef: React.RefObject<SVGAElement>;
@@ -11,7 +11,7 @@ export default class Logo extends React.Component<any,any> {
     componentDidMount() {
         // console.log(this.plumeRef.current?.id)
         // if(this.plumeRef.current){
-        //     const plume =SVG(".prefix__plume");
+            // const plume =SVG("#Logo g.prefix__plume");
         //     plume.animate({
         //         duration: 5000,
         //         delay: 1000,
@@ -20,6 +20,7 @@ export default class Logo extends React.Component<any,any> {
     render() {
         return (
             <svg
+            id="Logo"
                 data-name="Calque 1"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 278.59 277.6"

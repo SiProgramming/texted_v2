@@ -30,6 +30,7 @@ import './texted-editor.style.scss';
 */
 const ToolBarItems={
   options: [
+    "history",
     "fontFamily",
     "blockType",
     "fontSize",
@@ -38,11 +39,8 @@ const ToolBarItems={
     "textAlign",
     "colorPicker",
     "link",
-    "embedded",
     "emoji",
     "image",
-    "remove",
-    "history"
   ],
   inline: {
     inDropdown: false,
@@ -321,18 +319,6 @@ const ToolBarItems={
     ],
     title: "Emojis"
   },
-  embedded: {
-    icon: embedded,
-    className: undefined,
-    component: undefined,
-    popupClassName: undefined,
-    embedCallback: undefined,
-    defaultSize: {
-      height: "auto",
-      width: "auto"
-    },
-    title: "Embarquer un objet"
-  },
   image: {
     icon: image,
     className: undefined,
@@ -349,7 +335,7 @@ const ToolBarItems={
       height: "auto",
       width: "auto"
     },
-    title: "Image"
+    title: "Image depuis un internet"
   },
   remove: {
     icon: eraser,
