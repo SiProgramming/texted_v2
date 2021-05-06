@@ -12,22 +12,22 @@ Afin de parvenir a nos fins, ce micro editeur de texte utilise comme modulues es
 -[pyinstaller](https://pypi.org/project/pyinstaller/) afin de creer un executable quand le developement du projet sera terminer
 
 
-### Comment executer le logiciel ?
+## Comment executer le logiciel ?
 
-#### Prerequis pour l'execution du logiciel
+### Prerequis pour l'execution du logiciel
 
 - Node js
 - Python, eel
 - Une connexion internet pour installer les dependences
 
-##### Pour demarrer executer le logiciel simplement executer le logiciel 
+### Pour demarrer executer le logiciel simplement executer le logiciel 
 <code>
   <pre>
     yarn start 
   </pre>
 <code/>
   
-##### Pour creer un build de distribution
+### Pour creer un build de distribution
 
 <code>
   <pre>
@@ -36,7 +36,7 @@ Afin de parvenir a nos fins, ce micro editeur de texte utilise comme modulues es
 <code/>
 
 
-#### Bugs et suggestions
+## Bugs et suggestions
 
 Pour tout bugs ou eventuel suggestion veuillez ouvrir une [issue](#) et pour d'eventuelle suggestion veuillez 
 nous ecrire ou nous contacter [@siprogramming](https://github.com/SiProgramming)
