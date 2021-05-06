@@ -1,5 +1,6 @@
 import React from "react"
 // import SVG from 'svg.js';
+import './logo.style.scss';
 
 export default class Logo extends React.Component<any,any> {
     plumeRef: React.RefObject<SVGAElement>;
@@ -11,12 +12,14 @@ export default class Logo extends React.Component<any,any> {
     componentDidMount() {
         // console.log(this.plumeRef.current?.id)
         // if(this.plumeRef.current){
-            // const plume =SVG("#Logo g.prefix__plume");
+        //     const plume =SVG("#id_plume");
         //     plume.animate({
         //         duration: 5000,
         //         delay: 1000,
         //     }).rotate(25, 180, 125).move(230, 122);
-        }
+        // }
+    }
+
     render() {
         return (
             <svg
@@ -81,7 +84,7 @@ export default class Logo extends React.Component<any,any> {
                         <stop offset={1} stopColor="#1d0e46" />
                     </linearGradient>
                 </defs>
-                <g  className="prefix__plume" ref={this.plumeRef}>
+                <g id="id_plume"  className="prefix__plume" ref={this.plumeRef}>
                     <path
                         d="M217.47 127.42a59.26 59.26 0 00-15.16 13.28 107.63 107.63 0 00-10.89 16.19c-3.2 5.69-6.06 11.6-8.75 17.63s-5.17 12.17-7.56 18.39-4.65 12.51-6.86 18.85L165 221.3q-1.68 4.77-3.56 9.5a178.53 178.53 0 01-8.75 18.73c-1.67 3.1-3.47 6.18-5.46 9.25a85.76 85.76 0 01-6.7 9.14l-.84-.16a56.25 56.25 0 01-2.37-11.24 87.41 87.41 0 01-.58-11 105.66 105.66 0 012.4-21.44q1.14-5.25 2.73-10.38c1.06-3.42 2.29-6.79 3.53-10.17q3.75-10.09 8.53-19.88a175.93 175.93 0 0110.79-19c2-3.06 4.16-6.07 6.44-9s4.7-5.75 7.28-8.46c1.27-1.37 2.63-2.67 4-4s2.8-2.51 4.27-3.71 2.94-2.36 4.51-3.42c.78-.54 1.55-1.08 2.36-1.58s1.58-1 2.43-1.48c6.52-3.79 13.94-6.39 21.27-6.37z"
                         fill="url(#prefix__a)"

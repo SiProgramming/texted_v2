@@ -46,34 +46,35 @@ def save_file(data: str, path: str,doc_filename:str, force: bool):
             file_to_write_in = TkFile.asksaveasfile(
                 filetypes=extenion, defaultextension='.texted',initialfile=doc_filename)
             print(data)
-            #Saving data
-            file_to_write_in.write(data)
-            file_to_write_in.close()
-            filename_name = file_to_write_in.name.split('/')[-1]
-            print(file_to_write_in.name.split('/'))
-            dict_obj={
-                "filename": filename_name,
-                "path": file_to_write_in.name,
-            }
-            tinydb_helper.save_or_update_document(dict_obj)
-            return dict_obj
-
+            if(file_to_write_in!=None):
+                #Saving data
+                file_to_write_in.write(data)
+                file_to_write_in.close()
+                filename_name = file_to_write_in.name.split('/')[-1]
+                print(file_to_write_in.name.split('/'))
+                dict_obj={
+                    "filename": filename_name,
+                    "path": file_to_write_in.name,
+                }
+                tinydb_helper.save_or_update_document(dict_obj)
+                return dict_obj
+            return None
         elif (force == True):
             extenion = [("TextEd File", "*.texted")]
             file_to_write_in = TkFile.asksaveasfile(
                 filetypes=extenion, defaultextension='.texted', initialfile=path.split('/')[-1])
-
-            #Saving data
-            file_to_write_in.write(data)
-            file_to_write_in.close()
-            filename_name = file_to_write_in.name.split('/')[-1]
-            dict_obj={
-                "filename": filename_name,
-                "path": file_to_write_in.name,
-            }
-            tinydb_helper.save_or_update_document(dict_obj)
-            return dict_obj
-
+            if(file_to_write_in!=None):
+                #Saving data
+                file_to_write_in.write(data)
+                file_to_write_in.close()
+                filename_name = file_to_write_in.name.split('/')[-1]
+                dict_obj={
+                    "filename": filename_name,
+                    "path": file_to_write_in.name,
+                }
+                tinydb_helper.save_or_update_document(dict_obj)
+                return dict_obj
+            return None
         else:
             file_to_write_in = open(path, "w")
             file_to_write_in.write(data)
@@ -163,7 +164,10 @@ def init():
             chromeFlags=["--start-fullscreen", "--browser-startup-dialog"]
             )
             eel.init('build',[".js",".html",".tsx",".ts",".jsx"])
-            eel.start('index.html',size=(int(tk.winfo_screenwidth()), int(
+            eel.start({
+                'port': 8888,
+                'host': 'localhost'
+            },size=(int(tk.winfo_screenwidth()), int(
             tk.winfo_screenheight())), suppress_error=True, **eel_kwargs)
 
         except EnvironmentError:

@@ -1,12 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+
 block_cipher = None
 
 
 a = Analysis(['index.py'],
              pathex=['D:\\Programming Projects\\Teams\\SiProgramming\\virtualenv\\texted_app'],
              binaries=[],
-             datas=[('C:\\Users\\TRUST\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\eel\\eel.js', 'eel'), ('build', 'build')],
+             datas=[('D:\\Programming Projects\\Teams\\SiProgramming\\virtualenv\\texted_app\\env\\lib\\site-packages\\eel\\eel.js', 'eel'), ('build', 'build')],
              hiddenimports=['bottle_websocket'],
              hookspath=[],
              runtime_hooks=[],
@@ -30,4 +31,4 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=True )
+          console=True , icon='logo.ico')

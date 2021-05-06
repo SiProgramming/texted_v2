@@ -17,7 +17,6 @@ import eraser from '../../../../../images/eraser.svg';
 import link from '../../../../../images/link.svg';
 import unlink from '../../../../../images/unlink.svg';
 import emoji from '../../../../../images/emoji.svg';
-import embedded from '../../../../../images/embedded.svg';
 import image from '../../../../../images/image.svg';
 import undo from '../../../../../images/undo.svg';
 import redo from '../../../../../images/redo.svg';

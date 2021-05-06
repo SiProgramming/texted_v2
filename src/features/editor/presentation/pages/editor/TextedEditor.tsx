@@ -1,17 +1,14 @@
 import Button from '@material-ui/core/Button';
-import { CameraAlt, FolderOpen, PhotoLibraryOutlined, PictureAsPdf, PostAdd, Print, Save, SaveAlt } from '@material-ui/icons';
+import { CameraAlt, FolderOpen, PhotoLibraryOutlined, PostAdd, Print, Save, SaveAlt } from '@material-ui/icons';
 import React from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { eel } from '../../../../../eel';
 import './texted-editor.style.scss';
 import ToolBarItems from './TextEditorToolBarItems';
-import { ContentState, convertFromHTML, convertToRaw, EditorState } from 'draft-js';
+import { ContentState, convertFromHTML, EditorState } from 'draft-js';
 import { EditorStateTransformer2 } from '../../../../../core/utils/transformers/EditorStateTransformer';
-import jsPDF from 'jspdf';
-import draftToHtml from 'draftjs-to-html';
 import { withRouter } from 'react-router-dom';
-// import * as Mammonth from 'mammoth';
 
 import createImagePlugin from "@draft-js-plugins/image";
 import TextEdWebcam from '../../components/webcam/webcam.components';
@@ -119,12 +116,6 @@ const textEditor = class TextEdEditor extends React.Component<any, {
     };
 
     insertImage = (editorState: EditorState, base64: string, options?: { width: number, height: number }) => {
-        const contentState = this.state.editorState.getCurrentContent();
-        const contentStateWithEntity = contentState.createEntity(
-            'image',
-            'IMMUTABLE',
-            { src: base64 }
-        );
         return imagePlugin.addImage(editorState, base64, options ?? { width: 250, height: 150 });
     };
 
@@ -139,6 +130,11 @@ const textEditor = class TextEdEditor extends React.Component<any, {
                 // Process the event here (such as click on submit button)
             }
         });
+
+        window.addEventListener('beforeunload', () => {
+            const response = window.confirm("Etes vous sure de vouloir fermer l'Editeur ?");
+            console.log(response);
+        })
         //Handle printing
         document.addEventListener('keydown', async (e) => {
             if (window.navigator.platform.match("Win") && e.ctrlKey && e.code === "KeyP") {
@@ -169,13 +165,11 @@ const textEditor = class TextEdEditor extends React.Component<any, {
     onHandleSideBarOpening = () => {
         this.setState({ ...this.state, openSidebar: true });
         this.actionBarRef?.current?.classList?.toggle('open-bar');
-        // console.log(actionBarRef.current?.classList)
     }
     // Openin sidebar
     onHandleSideBarCLosing = () => {
         this.setState({ ...this.state, openSidebar: false });
         this.actionBarRef?.current?.classList?.remove('open-bar');
-        // console.log(actionBarRef.current?.classList)
     }
 
     convertDoc = (file_infos: string) => {
@@ -198,20 +192,21 @@ const textEditor = class TextEdEditor extends React.Component<any, {
         // console.log(this._editorState);
         const document_stringlify = EditorStateTransformer2.convertToString(this.state.editorState.getCurrentContent())
         const result = await eel.save_file(document_stringlify, this.state.path != null ? this.state.path : "empty", this.state.documentName, force)();
-        console.log(result)
-        this.setState({
-            documentName: result['filename'],
-            path: result['path']
-        });
-        this.fileInfoRef.current?.classList.add('file-info')
+        if (result !== null || result !== "null") {
+            this.setState({
+                documentName: result['filename'],
+                path: result['path']
+            });
+            this.fileInfoRef.current?.classList.add('file-info')
 
-        setTimeout(() => {
-            this.fileInfoRef.current?.classList.remove('file-info');
-            this.setState({ isSaved: true });
             setTimeout(() => {
-                this.setState({ isSaved: false })
-            }, 2000)
-        }, 6000)
+                this.fileInfoRef.current?.classList.remove('file-info');
+                this.setState({ isSaved: true });
+                setTimeout(() => {
+                    this.setState({ isSaved: false })
+                }, 2000)
+            }, 6000)
+        }
 
     }
 
@@ -227,40 +222,17 @@ const textEditor = class TextEdEditor extends React.Component<any, {
         this.onEditorContentChange(newEditorState)
     }
 
-    exportAsPdf = () => {
-        const docHtml = convertToRaw(this.state.editorState.getCurrentContent());
-        const doc = new jsPDF();
-
-        const markup = draftToHtml(docHtml);
-        const splitText = doc.splitTextToSize(markup, 250);
-        doc.setFontSize(12);
-        const pageHeight = doc.internal.pageSize.height;
-        var y = 20;
-        for (var i = 0; i < splitText.length; i++) {
-            if (y > pageHeight) {
-                y = 20;
-                doc.addPage();
-            }
-            y = y + 5;
-            console.log("makr",markup)
-            doc.fromHTML(markup,{
-                x:20,
-                y:20
-            });
-        }
-        doc.save(`${this.state.documentName}.pdf`);
-    }
 
     openDocument = async () => {
         const file_infos = await eel.open_file()()
-        if (file_infos != null) {
+        if (file_infos !== null) {
             const file_info_json = JSON.parse(file_infos);
-            const split_doc:Array<string>=file_info_json.filename.split(".")
-            if(split_doc[split_doc.length-1]=="docx"){
+            const split_doc: Array<string> = file_info_json.filename.split(".")
+            if (split_doc[split_doc.length - 1] === "docx") {
                 const blocksFromHTML = convertFromHTML(file_info_json.content);
                 const state = ContentState.createFromBlockArray(
-                blocksFromHTML.contentBlocks,
-                blocksFromHTML.entityMap,
+                    blocksFromHTML.contentBlocks,
+                    blocksFromHTML.entityMap,
                 );
                 this.setState({
                     documentName: file_info_json.filename,
@@ -313,7 +285,7 @@ const textEditor = class TextEdEditor extends React.Component<any, {
                     {!this.state.openSidebar ? <FolderOpen style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} onClick={this.openDocument}><FolderOpen style={{ marginRight: 4 }} />Ouvrir</Button>}
                     {!this.state.openSidebar ? <Save style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} onClick={() => this.saveDocument()}><Save style={{ marginRight: 4 }} /> Enregistrer</Button>}
                     {!this.state.openSidebar ? <SaveAlt style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 11, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} title="Enregistrer sous" onClick={() => this.saveDocument(true)}><SaveAlt style={{ marginRight: 4 }} /> Enreg. sous</Button>}
-                    {!this.state.openSidebar ? <PictureAsPdf style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} title="Exporter en PDF" onClick={this.exportAsPdf}><PictureAsPdf style={{ marginRight: 4 }} />Exp. PDF</Button>}
+                    {/* {!this.state.openSidebar ? <PictureAsPdf style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} title="Exporter en PDF" onClick={this.exportAsPdf}><PictureAsPdf style={{ marginRight: 4 }} />Exp. PDF</Button>} */}
                     {!this.state.openSidebar ? <Print style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} onClick={this.onHandlePrinting}><Print style={{ marginRight: 4 }} /> Imprimer</Button>}
                     {/* {!openSidebar ?<ExitToApp style={{border:"1px solid white",padding:5,color:"white",fontSize:40,marginBottom:7,borderRadius:5}} />:<Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white",borderRadius:5,width: "85%", display: "flex", justifyContent: "flex-start" }} onClick={exit}><ExitToApp style={{ marginRight: 4 }} /> Quitter</Button>} */}
                 </div> : null}
