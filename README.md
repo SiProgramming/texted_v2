@@ -14,29 +14,25 @@ Afin de parvenir a nos fins, ce micro editeur de texte utilise comme modulues es
 
 ## Comment executer le logiciel ?
 
-### Prerequis pour l'execution du logiciel
+  ### Prerequis pour l'execution du logiciel
+  - Node js
+  - Python, eel
+  - Une connexion internet pour installer les dependences
 
-- Node js
-- Python, eel
-- Une connexion internet pour installer les dependences
+  ### Pour demarrer executer le logiciel simplement executer le logiciel 
+  <code>
+    <pre>
+      yarn start 
+    </pre>
+  <code/>
 
-### Pour demarrer executer le logiciel simplement executer le logiciel 
-<code>
-  <pre>
-    yarn start 
-  </pre>
-<code/>
-  
-### Pour creer un build de distribution
-
-<code>
-  <pre>
-    yarn build 
-  </pre>
-<code/>
-
+  ### Pour creer un build de distribution
+  <code>
+    <pre>
+      yarn build 
+    </pre>
+  <code/>
 
 ## Bugs et suggestions
-
 Pour tout bugs ou eventuel suggestion veuillez ouvrir une [issue](#) et pour d'eventuelle suggestion veuillez 
 nous ecrire ou nous contacter [@siprogramming](https://github.com/SiProgramming)
