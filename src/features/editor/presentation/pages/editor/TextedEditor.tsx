@@ -58,6 +58,7 @@ const textEditor = class TextEdEditor extends React.Component<any, {
     hideToolBar: boolean,
     isSaved: boolean,
     isError: boolean,
+    isPrinting:boolean
 }>{
     actionBarRef: React.RefObject<HTMLDivElement>;
     editorRef: React.RefObject<any>;
@@ -76,6 +77,7 @@ const textEditor = class TextEdEditor extends React.Component<any, {
             hideToolBar: false,
             isSaved: false,
             isError: false,
+            isPrinting:false
         };
         this.webcamRef = React.createRef();
         this.fileInfoRef = React.createRef();
@@ -139,14 +141,14 @@ const textEditor = class TextEdEditor extends React.Component<any, {
         document.addEventListener('keydown', async (e) => {
             if (window.navigator.platform.match("Win") && e.ctrlKey && e.code === "KeyP") {
                 e.preventDefault();
-                this.setState({ hideToolBar: true });
+                this.setState({ hideToolBar: true,isPrinting:true });
                 setTimeout(() => {
                     window.print();
                 }, 2000)
             }
         });
         window.addEventListener('afterprint', () => {
-            this.setState({ hideToolBar: false })
+            this.setState({ hideToolBar: false,openSidebar:false })
         });
 
         if (this.props.location.state) {
@@ -273,11 +275,13 @@ const textEditor = class TextEdEditor extends React.Component<any, {
             <div className="texted-editor">
                 {/* <TextEdWebcam webcamRef={this.webcamRef} onCLose={this.onHandleCLoseWebcam} onCapture={this.onHandleOpenWebcam} /> */}
                 <Modal open={this.state.openWebcam} onClose={this.onHandleCLoseWebcam}><TextEdWebcam webcamRef={this.webcamRef} onCLose={this.onHandleCLoseWebcam} onCapture={this.onCaptureImage} /></Modal>
-                <div className="" style={{ flexBasis: "95.5%", display: "flex", flexDirection: "column", order: 2 }}>
+                <div className="" style={{ flexBasis:!this.state.hideToolBar?"95.5%":"100%", display: "flex", flexDirection: "column", order: 2 }}>
+                   { !this.state.hideToolBar ?
                     <div className="file-anim" ref={this.fileInfoRef} style={{ backgroundColor: "white", justifyContent: "space-between", alignItems: "center", flexDirection: "column", height: "40px", display: "flex" }}>
                         <p style={{ width: "100%", paddingLeft: this.state.isSaved ? 230 : 0, paddingTop: 5, textAlign: "center" }}>{this.state.documentName} - {this.state.path ? this.state.path : "Non defini"} {this.state.isSaved ? <AlertMessage isError={this.state.isError} /> : null}</p>
-                    </div>
-                    <Editor ref={this.editorRef} toolbarHidden={this.state.hideToolBar} toolbarClassName="toolbar" editorState={this.state.editorState} onEditorStateChange={this.onEditorContentChange} editorClassName="test" toolbar={ToolBarItems} toolbarCustomButtons={[<AddLocalImage imageRef={this.imageRef} onImageChange={this.onImageLoad} />, <CameraIcon editorRef={this.editorRef} onCaptureImage={this.onCaptureImage} onShowWebCam={this.onHandleOpenWebcam} />]} wrapperStyle={{ height: "100%", overflow: "hidden", flexBasis: "100%", order: 2 }} editorStyle={{ padding: 25, backgroundColor: "white", marginTop: !this.state.hideToolBar ? 35 : 0, marginLeft: !this.state.hideToolBar ? 70 : 0, marginRight: !this.state.hideToolBar ? 70 : 0, boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)", overflow: "auto", height: "87%" }} />
+                    </div>:null
+                   }    
+                    <Editor ref={this.editorRef} toolbarHidden={this.state.hideToolBar} toolbarClassName="toolbar" editorState={this.state.editorState} onEditorStateChange={this.onEditorContentChange} editorClassName="test" toolbar={ToolBarItems} toolbarCustomButtons={[<AddLocalImage imageRef={this.imageRef} onImageChange={this.onImageLoad} />, <CameraIcon editorRef={this.editorRef} onCaptureImage={this.onCaptureImage} onShowWebCam={this.onHandleOpenWebcam} />]} wrapperStyle={{ height: "100%", flexBasis: "100%", order: 2 }} editorStyle={{padding: 25, backgroundColor: "white", marginTop: !this.state.hideToolBar ? 35 : 0, marginLeft: !this.state.hideToolBar ? 70 : 0, marginRight: !this.state.hideToolBar ? 70 : 0, boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)", overflow: "auto", height:!this.state.hideToolBar? "87%":"100%" }} />
                 </div>
                 {/* */}
                 {!this.state.hideToolBar ? <div ref={this.actionBarRef} onMouseEnter={this.onHandleSideBarOpening} onMouseLeave={this.onHandleSideBarCLosing} className="actions-bar" style={{ flexBasis: !this.state.openSidebar ? "4.5%" : "10%", transition: "flex-basis 400ms cubic-bezier(0.075, 0.82, 0.165, 1) reversed" }}>
