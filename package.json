@@ -43,7 +43,7 @@
     "start:js": "react-scripts start",
     "build:js": "react-scripts build",
     "start:eel": "python index.py --develop",
-    "build:eel": "python -m eel index.py build --icon=logo.ico --noconsole --onefile --name TextEd_no_consoled",
+    "build:eel": "python -m eel index.py build --icon=logo.ico --noconsole --onefile --name TextEd",
     "clean:build": "rm -rf build dist",
     "start": "npm-run-all -p start:*",
     "build": "npm-run-all clean:build build:*",

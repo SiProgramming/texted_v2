@@ -22,7 +22,7 @@ Et aussi les appels de fonctions backend se font de facon asynchrome.
 
 ## * Comment executer le logiciel 🤔 ?
   Prerequis pour l'execution du logiciel 
-  - Node js
+  - Node js, and typescript 
   - Python, eel
   - Une connexion internet pour installer les dependences
 
