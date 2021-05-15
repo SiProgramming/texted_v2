@@ -17,11 +17,11 @@ const TextEdWebcam= (props:{
       };
 
     return (
-        <div style={{padding:15, position:"absolute",top:"25%",left:"45%"}}>
+        <div style={{padding:15, position:"absolute",top:"25%",left:"40%"}}>
             <Card style={{borderRadius:25,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"space-around"}} elevation={12} >
                 <IconButton style={{marginTop:15}} onClick={props.onCLose}><Close /></IconButton>
                 <Webcam ref={props.webcamRef} videoConstraints={videoConstraints} height={300} width={300} audio={false} />
-                <Button  onClick={props.onCapture} style={{boxSizing:"border-box",cursor:"pointer",padding:"0 12px",position:"relative",top:-25,backgroundColor:"black",width:"40%",color:"white",borderRadius:25,height:30}}><CameraAlt  style={{marginRight:7}}/> Capturer</Button>
+                <Button  onClick={props.onCapture} style={{boxSizing:"border-box",cursor:"pointer",padding:"0 12px",position:"relative",top:-25,backgroundColor:"#312783",width:"40%",color:"white",borderRadius:25,height:30}}><CameraAlt  style={{marginRight:7}}/> Capturer</Button>
             </Card>
         </div>
     )

@@ -3,16 +3,16 @@ import { CameraAlt, FolderOpen, PhotoLibraryOutlined, PostAdd, Print, Save, Save
 import React from 'react';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { eel } from '../../../../../eel';
 import './texted-editor.style.scss';
 import ToolBarItems from './TextEditorToolBarItems';
 import { ContentState, convertFromHTML, EditorState } from 'draft-js';
-import { EditorStateTransformer2 } from '../../../../../core/utils/transformers/EditorStateTransformer';
 import { withRouter } from 'react-router-dom';
 
 import createImagePlugin from "@draft-js-plugins/image";
 import TextEdWebcam from '../../components/webcam/webcam.components';
 import { Modal } from '@material-ui/core';
+import { EditorStateTransformer2 } from '../../core/utils/transformers/EditorStateTransformer';
+import { eel } from '../../eel';
 const imagePlugin = createImagePlugin();
 
 const AlertMessage = (props: { isError: boolean }) => {
@@ -266,14 +266,13 @@ const textEditor = class TextEdEditor extends React.Component<any, {
             })
         }
         else {
-            this.setState({ isError: true, isSaved: true })
+                this.setState({ isError: true, isSaved: true })
         }
     }
 
     render() {
         return (
             <div className="texted-editor">
-                {/* <TextEdWebcam webcamRef={this.webcamRef} onCLose={this.onHandleCLoseWebcam} onCapture={this.onHandleOpenWebcam} /> */}
                 <Modal open={this.state.openWebcam} onClose={this.onHandleCLoseWebcam}><TextEdWebcam webcamRef={this.webcamRef} onCLose={this.onHandleCLoseWebcam} onCapture={this.onCaptureImage} /></Modal>
                 <div className="" style={{ flexBasis:!this.state.hideToolBar?"95.5%":"100%", display: "flex", flexDirection: "column", order: 2 }}>
                    { !this.state.hideToolBar ?
@@ -289,7 +288,6 @@ const textEditor = class TextEdEditor extends React.Component<any, {
                     {!this.state.openSidebar ? <FolderOpen style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} onClick={this.openDocument}><FolderOpen style={{ marginRight: 4 }} />Ouvrir</Button>}
                     {!this.state.openSidebar ? <Save style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} onClick={() => this.saveDocument()}><Save style={{ marginRight: 4 }} /> Enregistrer</Button>}
                     {!this.state.openSidebar ? <SaveAlt style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 11, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} title="Enregistrer sous" onClick={() => this.saveDocument(true)}><SaveAlt style={{ marginRight: 4 }} /> Enreg. sous</Button>}
-                    {/* {!this.state.openSidebar ? <PictureAsPdf style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} title="Exporter en PDF" onClick={this.exportAsPdf}><PictureAsPdf style={{ marginRight: 4 }} />Exp. PDF</Button>} */}
                     {!this.state.openSidebar ? <Print style={{ border: "1px solid white", padding: 5, color: "white", fontSize: 40, marginBottom: 7, borderRadius: 5 }} /> : <Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white", borderRadius: 5, width: "85%", marginBottom: 12, display: "flex", justifyContent: "flex-start" }} onClick={this.onHandlePrinting}><Print style={{ marginRight: 4 }} /> Imprimer</Button>}
                     {/* {!openSidebar ?<ExitToApp style={{border:"1px solid white",padding:5,color:"white",fontSize:40,marginBottom:7,borderRadius:5}} />:<Button variant="outlined" className="action-button" style={{ margin: "0 15px", fontSize: 12, textTransform: "capitalize", borderColor: "white",borderRadius:5,width: "85%", display: "flex", justifyContent: "flex-start" }} onClick={exit}><ExitToApp style={{ marginRight: 4 }} /> Quitter</Button>} */}
                 </div> : null}

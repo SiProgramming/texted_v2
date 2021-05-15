@@ -1,5 +1,5 @@
+import anime from "animejs";
 import React from "react"
-// import SVG from 'svg.js';
 import './logo.style.scss';
 
 export default class Logo extends React.Component<any,any> {
@@ -9,16 +9,6 @@ export default class Logo extends React.Component<any,any> {
         this.plumeRef=React.createRef();
     }
 
-    componentDidMount() {
-        // console.log(this.plumeRef.current?.id)
-        // if(this.plumeRef.current){
-        //     const plume =SVG("#id_plume");
-        //     plume.animate({
-        //         duration: 5000,
-        //         delay: 1000,
-        //     }).rotate(25, 180, 125).move(230, 122);
-        // }
-    }
 
     render() {
         return (
